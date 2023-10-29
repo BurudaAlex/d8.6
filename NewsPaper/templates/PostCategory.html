@@ -1,0 +1,77 @@
+
+{% extends 'flatpages/default.html' %}
+
+{% load custom_tags %}
+{% block title %}
+Posts
+{% endblock title %}
+
+
+{% block content %}
+   <h1>全てニュース</h1>
+    <h3>{{ time_now|date:'M d Y' }}</h3>
+    <h3> {{ next_sale|default_if_none:"新たなニュースは毎日" }} </h3>
+        <form action="" method="get">
+       {# Переменная, которую мы передали через контекст, может сгенерировать нам форму с полями #}
+       {{ filterset.form.as_p }}
+       {# Добавим кнопку отправки данных формы #}
+       <input type="submit" value="探す" />
+       </form>
+   <hr>
+   {% if PostCategory %}
+       <table>
+           <tr>
+               <td>名</td>
+               <td>内容</td>
+               <td>カテゴリー</td>
+               <td>タイトル</td>
+               <td>ランキング</td>
+           </tr>
+
+           <!-- Для каждого товара будете генерироваться новая строчка,
+           т.е. новый HTML код, который указан в теле цикла.
+           При этом сам цикл работает точно так же, как и в Python.
+           product — переменная цикла, т.е. наш товар полученный из списка -->
+           {% for PostCategoryOneByOne in PostCategory %}
+           <tr>
+               <!-- Не забываем, что переменные в шаблоне ничем не отличаются
+                от переменных в Python. Здесь также можно получать доступ к
+                полям объекта модели. Например, здесь мы выводим имя,
+                в следующем столбце описание, и т.д.  -->
+               <td>{{ PostCategoryOneByOne.author }}</td>
+               <td>{{ PostCategoryOneByOne.text|truncatechars:20 }}</td>
+               <td>{{ PostCategoryOneByOne.category.name }}</td>
+               <td>{{ PostCategoryOneByOne.title }}</td>
+               <td>{{ PostCategoryOneByOne.rating }}</td>
+           </tr>
+           {% endfor %}
+
+       </table>
+   {% else %}
+       <h2>ニュース無し</h2>
+   {% endif %}
+
+   {# Добавляем пагинацию на страницу #}
+
+   {# Информация о предыдущих страницах #}
+   {% if page_obj.has_previous %}
+       <a href="?{% url_replace page=1 %}"> 1 </a>
+       {% if page_obj.previous_page_number != 1 %}
+           ...
+           <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+       {% endif %}
+   {% endif %}
+
+   {# Информация о текущей странице #}
+   {{ page_obj.number }}
+
+   {# Информация о следующих страницах #}
+   {% if page_obj.has_next %}
+       <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+       {% if paginator.num_pages != page_obj.next_page_number %}
+           ...
+           <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+       {% endif %}
+   {% endif %}
+
+{% endblock content %}

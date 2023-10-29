@@ -1,0 +1,32 @@
+<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+{% extends 'flatpages/default.html' %}
+
+{% load custom_tags %}
+{% block title %}
+Posts
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
+{% block content %}
+   <h1>全てニュース</h1>
+    <h3>{{ time_now|date:'M d Y' }}</h3>
+   <hr>
+   {% if PostCategoryOneByOne %}
+       <table>
+           <tr>
+               <td>名</td>
+               <td>内容</td>
+               <td>カテゴリー</td>
+               <td>数</td>
+           </tr>
+           <tr>
+               <td>{{ PostCategoryOneByOne.author }}</td>
+               <td>{{ PostCategoryOneByOne.text|truncatechars:20 }}</td>
+               <td>{{ PostCategoryOneByOne.title }}</td>
+               <td>{{ PostCategoryOneByOne.rating }}</td>
+           </tr>
+       </table>
+   {% else %}
+    <h2>ニュース無し</h2>
+   {% endif %}
+{% endblock content %}
